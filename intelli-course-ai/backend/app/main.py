@@ -10,6 +10,7 @@ from app.api.routes import graph as graph_routes
 from app.api.routes import memory as memory_routes
 from app.api.routes import market as market_routes
 from app.api.routes import stream as stream_routes
+from app.future_path_ai import router as future_path_router
 
 logger = structlog.get_logger()
 
@@ -140,6 +141,7 @@ def create_app() -> FastAPI:
     app.include_router(memory_routes.router, prefix=f"{prefix}/memory")
     app.include_router(market_routes.router, prefix=prefix)
     app.include_router(stream_routes.router, prefix=prefix)
+    app.include_router(future_path_router.router, prefix=prefix)
 
     return app
 

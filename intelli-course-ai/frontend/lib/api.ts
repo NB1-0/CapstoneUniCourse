@@ -5,6 +5,7 @@ import type {
   GraphStats, GraphExploreData, SkillPathResponse, CareerPathResponse,
   RelatedSkillsResponse, GraphRecommendResponse, MemoryProfile,
   TrendingSkill, CareerDemand, EmergingTech, SkillInsight, MarketSummary,
+  SimulationResponse, WhatIfResponse, HistoryResponse, TimelineGraphData,
 } from '@/types'
 
 const API_BASE = typeof window !== 'undefined'
@@ -167,4 +168,30 @@ export const api = {
 
   skillInsight: (skillName: string): Promise<SkillInsight> =>
     client.get(`/market/skill-insight/${encodeURIComponent(skillName)}`).then((r) => r.data),
+
+  // ── FuturePath AI ─────────────────────────────────────────────────────────
+  simulateFuturePath: (params: {
+    user_id: string
+    current_skills: string[]
+    completed_courses: string[]
+    target_careers: string[]
+    weekly_learning_hours: number
+    preferred_difficulty: string
+    learning_pace: string
+    career_priority: string
+  }): Promise<SimulationResponse> =>
+    client.post('/future-path/simulate', params).then((r) => r.data),
+
+  whatIfSimulation: (params: {
+    user_id: string
+    base_simulation_id: string
+    scenario_change: string
+  }): Promise<WhatIfResponse> =>
+    client.post('/future-path/what-if', params).then((r) => r.data),
+
+  getFuturePathHistory: (userId: string): Promise<HistoryResponse> =>
+    client.get(`/future-path/history/${encodeURIComponent(userId)}`).then((r) => r.data),
+
+  getFuturePathGraph: (userId: string, simId: string, pathId: string): Promise<TimelineGraphData> =>
+    client.get(`/future-path/graph/${encodeURIComponent(userId)}/${simId}/${pathId}`).then((r) => r.data),
 }

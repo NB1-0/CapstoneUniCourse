@@ -312,3 +312,109 @@ export interface MarketSummary {
   last_updated: string
 }
 
+// ── FuturePath AI ─────────────────────────────────────────────────────────────
+
+export interface RoadmapStep {
+  step: number
+  phase: string
+  skill: string
+  course_name: string
+  course_id: string
+  estimated_weeks: number
+  description: string
+}
+
+export interface FutureCareerPath {
+  path_id: string
+  path_name: string
+  career_goal: string
+  timeline_type: string
+  estimated_months: number
+  success_probability: number
+  readiness_score: number
+  difficulty_risk: 'Low' | 'Medium' | 'High'
+  career_alignment_score: number
+  missing_skills: string[]
+  recommended_courses: Array<{
+    id: string
+    course_name: string
+    organization: string
+    difficulty_level: string
+    rating: number
+    course_url?: string
+    skills?: string[]
+  }>
+  roadmap_steps: RoadmapStep[]
+  explanation: string
+  score_breakdown: {
+    prerequisite_score: number
+    skill_match_score: number
+    learning_capacity_score: number
+    difficulty_fit_score: number
+    career_alignment_score: number
+    market_relevance_score: number
+  }
+}
+
+export interface SimulationResponse {
+  simulation_id: string
+  user_id: string
+  created_at: string
+  paths: FutureCareerPath[]
+  summary: string
+  processing_time_ms: number
+}
+
+export interface PathMetrics {
+  success_probability: number
+  estimated_months: number
+  difficulty_risk: string
+  timeline_type: string
+  career_alignment_score: number
+}
+
+export interface WhatIfResponse {
+  scenario: string
+  explanation: string
+  before_metrics: PathMetrics
+  after_metrics: PathMetrics
+  delta_probability: number
+  delta_months: number
+  risk_change: 'Increased' | 'Decreased' | 'Unchanged'
+  recommendation: string
+  processing_time_ms: number
+}
+
+export interface SimulationHistoryItem {
+  simulation_id: string
+  created_at: string
+  target_careers: string[]
+  path_count: number
+  top_probability: number
+}
+
+export interface HistoryResponse {
+  user_id: string
+  simulations: SimulationHistoryItem[]
+  total: number
+}
+
+export interface TimelineGraphData {
+  path_id: string
+  career_goal: string
+  nodes: Array<{
+    id: string
+    type?: string
+    data: Record<string, unknown>
+    position: { x: number; y: number }
+    style?: Record<string, unknown>
+  }>
+  edges: Array<{
+    id: string
+    source: string
+    target: string
+    animated?: boolean
+    style?: Record<string, unknown>
+  }>
+}
+

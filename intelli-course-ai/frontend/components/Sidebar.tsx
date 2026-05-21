@@ -6,7 +6,7 @@ import { useTheme } from 'next-themes'
 import {
   LayoutDashboard, Search, Route, BarChart3, Briefcase,
   Bookmark, Settings, ChevronLeft, ChevronRight, Moon, Sun,
-  GraduationCap, Sparkles, Share2, Map, TrendingUp,
+  GraduationCap, Sparkles, Share2, Map, TrendingUp, Telescope,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -20,6 +20,7 @@ const navItems = [
   { label: 'Knowledge Graph', href: '/graph', icon: Share2 },
   { label: 'Learning Maps', href: '/learning-map', icon: Map, badge: 'New' },
   { label: 'Market Intel', href: '/market', icon: TrendingUp, badge: 'New' },
+  { label: 'FuturePath AI', href: '/future-path', icon: Telescope, badge: '★' },
   { label: 'Saved Courses', href: '/saved', icon: Bookmark },
   { label: 'Settings', href: '/settings', icon: Settings },
 ]
