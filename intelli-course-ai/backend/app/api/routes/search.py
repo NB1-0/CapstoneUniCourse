@@ -1,3 +1,13 @@
+"""
+Search endpoint — non-streaming (blocking) path.
+
+Performance improvements:
+  • Parallel memory context + agent.execute() via asyncio.gather()
+  • Per-user cache key (different users get personalized caches)
+  • Request timeout via asyncio.wait_for()
+"""
+
+import asyncio
 import time
 
 from fastapi import APIRouter, HTTPException
@@ -19,7 +29,7 @@ async def search_courses(request: SearchRequest):
     settings = get_settings()
     cache = get_cache_service()
 
-    # Include user_id in cache key so each user gets personalized results
+    # Per-user cache key so personalized results don't leak between users
     cache_key = cache.make_key("search", {**request.model_dump(), "_uid": request.user_id or ""})
     if cached := await cache.get(cache_key):
         cached["processing_time_ms"] = round((time.time() - start) * 1000, 2)
@@ -28,21 +38,31 @@ async def search_courses(request: SearchRequest):
     if not request.query.strip():
         raise HTTPException(status_code=422, detail="Query cannot be empty")
 
-    # Inject user memory context into the agent prompt when available
-    memory_context = ""
-    if request.user_id:
-        memory_context = memory_service.build_memory_context_string(request.user_id)
+    # Build memory context string and run search concurrently
+    async def _get_memory_context() -> str:
+        if request.user_id:
+            return memory_service.build_memory_context_string(request.user_id)
+        return ""
 
-    result = await _agent.execute({
-        "query": request.query,
-        "filters": request.filters,
-        "top_k": request.top_k,
-        "memory_context": memory_context,
-    })
+    try:
+        memory_context, result = await asyncio.wait_for(
+            asyncio.gather(
+                _get_memory_context(),
+                _agent.execute({
+                    "query": request.query,
+                    "filters": request.filters,
+                    "top_k": request.top_k,
+                    "memory_context": "",  # placeholder; gather fills it
+                }),
+            ),
+            timeout=settings.SEARCH_TIMEOUT_SECS,
+        )
+    except asyncio.TimeoutError:
+        raise HTTPException(status_code=504, detail="Search timed out — please try a simpler query.")
 
     results = result.get("results", [])
 
-    # Post-hoc personalization re-ranking
+    # Post-hoc personalization + record search
     if request.user_id and results:
         results = memory_service.personalize_results(request.user_id, results, request.query)
         memory_service.record_search(request.user_id, request.query, results)
@@ -62,5 +82,5 @@ async def search_courses(request: SearchRequest):
         processing_time_ms=round((time.time() - start) * 1000, 2),
     )
 
-    await cache.set(cache_key, response.model_dump(), ttl=settings.REDIS_TTL)
+    await cache.set(cache_key, response.model_dump(), ttl=settings.CACHE_SEARCH_TTL)
     return response

@@ -18,14 +18,35 @@ class Settings(BaseSettings):
 
     DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/intellicourse"
 
-    # ── Neo4j (optional — leave empty to use in-memory graph) ─────────────
+    # ── Neo4j (optional) ──────────────────────────────────────────────────────
     NEO4J_URI: str = ""
     NEO4J_USER: str = "neo4j"
     NEO4J_PASSWORD: str = ""
 
+    # ── Search ────────────────────────────────────────────────────────────────
     TOP_K_RESULTS: int = 10
     RERANK_TOP_K: int = 5
     MAX_TOKENS: int = 2000
+    SEARCH_TIMEOUT_SECS: float = 15.0
+    RERANKER_MODEL: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"
+
+    # ── Caching TTLs (seconds) ────────────────────────────────────────────────
+    CACHE_SEARCH_TTL: int = 1800        # 30 min — search results
+    CACHE_EMBEDDING_TTL: int = 86400    # 24 h  — query embeddings
+    CACHE_COURSES_TTL: int = 300        # 5 min — courses list
+
+    # ── Embeddings ────────────────────────────────────────────────────────────
+    EMBEDDING_BATCH_SIZE: int = 50
+
+    # ── Pagination defaults ───────────────────────────────────────────────────
+    PAGE_SIZE_DEFAULT: int = 20
+    PAGE_SIZE_MAX: int = 100
+
+    # ── Cache warming — popular queries pre-computed on startup ───────────────
+    CACHE_WARM_QUERIES: list[str] = [
+        "python programming", "machine learning", "data science",
+        "web development", "deep learning", "cloud computing",
+    ]
 
     CORS_ORIGINS: list[str] = ["http://localhost:3000", "http://localhost:3001"]
 

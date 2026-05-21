@@ -9,6 +9,7 @@ from app.api.routes import health, courses, search, recommend, learning_path, sk
 from app.api.routes import graph as graph_routes
 from app.api.routes import memory as memory_routes
 from app.api.routes import market as market_routes
+from app.api.routes import stream as stream_routes
 
 logger = structlog.get_logger()
 
@@ -55,6 +56,11 @@ async def lifespan(app: FastAPI):
         await neo4j_client.init_neo4j(settings.NEO4J_URI, settings.NEO4J_USER, settings.NEO4J_PASSWORD)
 
     logger.info("IntelliCourse AI ready")
+
+    # Cache warming — pre-compute embeddings for popular queries in background
+    import asyncio as _asyncio
+    _asyncio.create_task(_warm_cache())
+
     yield
 
     # Shutdown
@@ -65,6 +71,35 @@ async def lifespan(app: FastAPI):
     await close_redis()
     await neo4j_client.close_neo4j()
     logger.info("IntelliCourse AI shutdown complete")
+
+
+async def _warm_cache():
+    """Pre-compute embeddings + search results for popular queries."""
+    import asyncio
+    from app.config import get_settings
+    from app.agents.course_retrieval_agent import CourseRetrievalAgent
+    from app.services.cache_service import get_cache_service
+
+    await asyncio.sleep(5)   # let startup settle first
+    settings = get_settings()
+    cache    = get_cache_service()
+    agent    = CourseRetrievalAgent()
+
+    for query in settings.CACHE_WARM_QUERIES:
+        try:
+            key = cache.make_key("search", {"query": query, "filters": {}, "top_k": 10, "_uid": ""})
+            if not await cache.get(key):
+                result = await agent.execute({"query": query, "filters": {}, "top_k": 10})
+                from app.schemas.response import SearchResponse
+                resp = SearchResponse(
+                    query=query, results=result.get("results", []),
+                    total=result.get("total", 0),
+                    clarification_needed=False, processing_time_ms=0,
+                )
+                await cache.set(key, resp.model_dump(), ttl=settings.CACHE_SEARCH_TTL)
+                logger.info("Cache warmed", query=query)
+        except Exception as e:
+            logger.debug("Cache warm failed", query=query, error=str(e))
 
 
 def create_app() -> FastAPI:
@@ -104,6 +139,7 @@ def create_app() -> FastAPI:
     app.include_router(graph_routes.router, prefix=prefix)
     app.include_router(memory_routes.router, prefix=f"{prefix}/memory")
     app.include_router(market_routes.router, prefix=prefix)
+    app.include_router(stream_routes.router, prefix=prefix)
 
     return app
 
