@@ -3,7 +3,8 @@ import type {
   SearchResponse, RecommendResponse, LearningPathResponse,
   SkillGapResponse, CareerAlignResponse, CoursesListResponse, HealthResponse,
   GraphStats, GraphExploreData, SkillPathResponse, CareerPathResponse,
-  RelatedSkillsResponse, GraphRecommendResponse,
+  RelatedSkillsResponse, GraphRecommendResponse, MemoryProfile,
+  TrendingSkill, CareerDemand, EmergingTech, SkillInsight, MarketSummary,
 } from '@/types'
 
 const API_BASE = typeof window !== 'undefined'
@@ -34,8 +35,13 @@ export const api = {
   }): Promise<CoursesListResponse> =>
     client.get('/courses', { params }).then((r) => r.data),
 
-  search: (query: string, filters?: Record<string, unknown>, top_k?: number): Promise<SearchResponse> =>
-    client.post('/search', { query, filters: filters || {}, top_k: top_k || 10 }).then((r) => r.data),
+  search: (
+    query: string,
+    filters?: Record<string, unknown>,
+    top_k?: number,
+    user_id?: string,
+  ): Promise<SearchResponse> =>
+    client.post('/search', { query, filters: filters || {}, top_k: top_k || 10, user_id: user_id || null }).then((r) => r.data),
 
   recommend: (
     user_goals: string, current_skills: string[], target_skills: string[],
@@ -101,4 +107,64 @@ export const api = {
     total: number
   }> =>
     client.get('/graph/careers').then((r) => r.data),
+
+  // ── Memory / Personalization ──────────────────────────────────────────────
+  getMemory: (userId: string): Promise<MemoryProfile> =>
+    client.get(`/memory/${encodeURIComponent(userId)}`).then((r) => r.data),
+
+  clearMemory: (userId: string): Promise<{ cleared: boolean }> =>
+    client.delete(`/memory/${encodeURIComponent(userId)}`).then((r) => r.data),
+
+  removeMemoryEntry: (userId: string, index: number): Promise<{ removed: boolean }> =>
+    client.delete(`/memory/${encodeURIComponent(userId)}/entry/${index}`).then((r) => r.data),
+
+  recordInteraction: (
+    userId: string,
+    courseId: string,
+    courseName: string,
+    skills: string[],
+    action: 'save' | 'view',
+  ): Promise<{ recorded: boolean }> =>
+    client.post(`/memory/${encodeURIComponent(userId)}/interaction`, {
+      course_id: courseId,
+      course_name: courseName,
+      skills,
+      action,
+    }).then((r) => r.data),
+
+  recordMemorySkills: (userId: string, skills: string[]): Promise<{ recorded: boolean }> =>
+    client.post(`/memory/${encodeURIComponent(userId)}/skills`, { skills }).then((r) => r.data),
+
+  recordMemoryCareer: (userId: string, career: string): Promise<{ recorded: boolean }> =>
+    client.post(`/memory/${encodeURIComponent(userId)}/career`, { career }).then((r) => r.data),
+
+  recordMemoryLevel: (userId: string, level: string): Promise<{ recorded: boolean }> =>
+    client.post(`/memory/${encodeURIComponent(userId)}/level`, { level }).then((r) => r.data),
+
+  // ── Market Intelligence ───────────────────────────────────────────────────
+  marketSummary: (): Promise<MarketSummary> =>
+    client.get('/market/summary').then((r) => r.data),
+
+  trendingSkills: (params?: {
+    category?: string
+    limit?: number
+    emerging_only?: boolean
+  }): Promise<TrendingSkill[]> =>
+    client.get('/market/trending-skills', { params }).then((r) => r.data),
+
+  careerDemand: (params?: {
+    demand_level?: string
+    category?: string
+    limit?: number
+  }): Promise<CareerDemand[]> =>
+    client.get('/market/career-demand', { params }).then((r) => r.data),
+
+  emergingTech: (params?: {
+    category?: string
+    limit?: number
+  }): Promise<EmergingTech[]> =>
+    client.get('/market/emerging-tech', { params }).then((r) => r.data),
+
+  skillInsight: (skillName: string): Promise<SkillInsight> =>
+    client.get(`/market/skill-insight/${encodeURIComponent(skillName)}`).then((r) => r.data),
 }

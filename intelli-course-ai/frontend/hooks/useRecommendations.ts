@@ -8,11 +8,11 @@ export function useSearch() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const search = async (query: string, filters?: Record<string, unknown>) => {
+  const search = async (query: string, filters?: Record<string, unknown>, userId?: string) => {
     setIsLoading(true)
     setError(null)
     try {
-      const result = await api.search(query, filters)
+      const result = await api.search(query, filters, undefined, userId)
       setData(result)
       return result
     } catch (e) {

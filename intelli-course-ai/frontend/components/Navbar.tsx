@@ -1,13 +1,15 @@
 'use client'
 import { useState, useRef } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { Search, Bell, User, LogOut, Settings, ChevronDown } from 'lucide-react'
+import { Search, Bell, User, LogOut, Settings, ChevronDown, Brain } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { NotificationPanel } from '@/components/NotificationPanel'
+import { MemoryPanel } from '@/components/MemoryPanel'
 import { useAuth } from '@/contexts/AuthContext'
 import { useNotifications } from '@/contexts/NotificationContext'
+import { useMemory } from '@/contexts/MemoryContext'
 import Link from 'next/link'
 
 const PAGE_LABELS: Record<string, string> = {
@@ -25,9 +27,11 @@ export function Navbar() {
   const router = useRouter()
   const { user, logout } = useAuth()
   const { unreadCount } = useNotifications()
+  const { profile } = useMemory()
 
   const [quickSearch, setQuickSearch] = useState('')
   const [notifOpen, setNotifOpen] = useState(false)
+  const [memoryOpen, setMemoryOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const userMenuRef = useRef<HTMLDivElement>(null)
 
@@ -65,13 +69,36 @@ export function Navbar() {
       </form>
 
       <div className="flex items-center gap-2">
+        {/* Memory indicator */}
+        <div className="relative">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="relative"
+            onClick={() => { setMemoryOpen(!memoryOpen); setNotifOpen(false); setUserMenuOpen(false) }}
+            title="Memory & Personalization"
+          >
+            <Brain className="w-4 h-4" />
+            {profile && profile.total_interactions > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-purple-500" />
+            )}
+          </Button>
+          <AnimatePresence>
+            {memoryOpen && (
+              <div className="absolute right-0 top-full mt-2 z-50">
+                <MemoryPanel onClose={() => setMemoryOpen(false)} />
+              </div>
+            )}
+          </AnimatePresence>
+        </div>
+
         {/* Notification bell */}
         <div className="relative">
           <Button
             variant="ghost"
             size="icon"
             className="relative"
-            onClick={() => { setNotifOpen(!notifOpen); setUserMenuOpen(false) }}
+            onClick={() => { setNotifOpen(!notifOpen); setMemoryOpen(false); setUserMenuOpen(false) }}
           >
             <Bell className="w-4 h-4" />
             {unreadCount > 0 && (
@@ -91,7 +118,7 @@ export function Navbar() {
         {/* User menu */}
         <div className="relative" ref={userMenuRef}>
           <button
-            onClick={() => { setUserMenuOpen(!userMenuOpen); setNotifOpen(false) }}
+            onClick={() => { setUserMenuOpen(!userMenuOpen); setNotifOpen(false); setMemoryOpen(false) }}
             className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-lg hover:bg-accent transition-colors"
           >
             <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-sm">

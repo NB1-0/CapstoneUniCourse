@@ -9,6 +9,7 @@ import { ChatInput } from '@/components/ChatInput'
 import { RecommendationPanel } from '@/components/RecommendationPanel'
 import { Button } from '@/components/ui/button'
 import { useSearch, useSavedCourses } from '@/hooks/useRecommendations'
+import { useMemory } from '@/contexts/MemoryContext'
 import { api } from '@/lib/api'
 import type { ChatMessage, CourseResult, SearchResponse } from '@/types'
 import toast from 'react-hot-toast'
@@ -21,6 +22,7 @@ export default function FinderPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const { isLoading, error, search } = useSearch()
   const { save, remove, isSaved } = useSavedCourses()
+  const { userId, recordSave, recordSearch } = useMemory()
   const searchParams = useSearchParams()
 
   useEffect(() => {
@@ -36,9 +38,10 @@ export default function FinderPage() {
     const userMsg: ChatMessage = { id: Date.now().toString(), role: 'user', content: query, timestamp: new Date() }
     setMessages((prev) => [...prev, userMsg])
 
-    const result = await search(query)
+    const result = await search(query, undefined, userId)
     if (result) {
       setActiveResults(result)
+      recordSearch(query, result.results)
       const aiMsg: ChatMessage = {
         id: (Date.now() + 1).toString(), role: 'assistant',
         content: result.clarification_needed
@@ -52,8 +55,14 @@ export default function FinderPage() {
   }
 
   const handleSave = (course: CourseResult) => {
-    if (isSaved(course.id)) { remove(course.id); toast('Course removed from saved') }
-    else { save(course); toast.success('Course saved!') }
+    if (isSaved(course.id)) {
+      remove(course.id)
+      toast('Course removed from saved')
+    } else {
+      save(course)
+      recordSave(course)
+      toast.success('Course saved!')
+    }
   }
 
   const handleCompare = (course: CourseResult) => {

@@ -7,6 +7,8 @@ from fastapi.responses import JSONResponse
 from app.config import get_settings
 from app.api.routes import health, courses, search, recommend, learning_path, skill_gap, career, ingest, notifications
 from app.api.routes import graph as graph_routes
+from app.api.routes import memory as memory_routes
+from app.api.routes import market as market_routes
 
 logger = structlog.get_logger()
 
@@ -100,6 +102,8 @@ def create_app() -> FastAPI:
     app.include_router(ingest.router, prefix=prefix)
     app.include_router(notifications.router, prefix=prefix)
     app.include_router(graph_routes.router, prefix=prefix)
+    app.include_router(memory_routes.router, prefix=f"{prefix}/memory")
+    app.include_router(market_routes.router, prefix=prefix)
 
     return app
 

@@ -221,3 +221,94 @@ export interface GraphRecommendResponse {
   graph_enhanced: boolean
   processing_time_ms: number
 }
+
+export interface MemoryEntry {
+  type: 'search' | 'save' | 'view' | 'skill' | 'career' | 'level'
+  content: string
+  timestamp: string
+  meta: Record<string, unknown>
+}
+
+export interface MemoryProfile {
+  user_id: string
+  inferred_skills: string[]
+  inferred_career: string | null
+  inferred_level: string | null
+  top_topics: string[]
+  recent_searches: string[]
+  recent_saves: string[]
+  total_interactions: number
+  last_active: string
+  created_at: string
+  entries: MemoryEntry[]
+}
+
+// ── Market Intelligence ───────────────────────────────────────────────────────
+
+export interface TrendingSkill {
+  skill: string
+  demand_score: number
+  growth_rate: number
+  job_postings: number
+  avg_salary: number
+  category: string
+  difficulty: string
+  is_emerging: boolean
+  related_careers: string[]
+  course_count: number
+}
+
+export interface CareerDemand {
+  title: string
+  demand_level: 'Critical' | 'High' | 'Growing' | 'Stable'
+  category: string
+  growth_rate: number
+  avg_salary: number
+  salary_min: number
+  salary_max: number
+  required_skills: string[]
+  trending_skills: string[]
+  remote_friendly: boolean
+  description: string
+}
+
+export interface EmergingTech {
+  name: string
+  category: string
+  adoption_stage: 'Early Adopter' | 'Growing' | 'Mainstream'
+  hype_score: number
+  description: string
+  use_cases: string[]
+  recommended_skills: string[]
+  market_size: string
+  timeline: string
+}
+
+export interface SkillInsight {
+  skill: string
+  demand_score: number
+  growth_rate: number
+  trend_summary: string
+  career_alignment: string[]
+  market_context: string
+  salary_impact: string
+  recommended_courses: Array<{
+    id: string
+    course_name: string
+    organization: string
+    rating: number
+    difficulty_level: string
+    course_url: string
+  }>
+}
+
+export interface MarketSummary {
+  total_skills_tracked: number
+  fastest_growing: string
+  fastest_growth_rate: number
+  hottest_career: string
+  top_emerging_tech: string
+  avg_salary_increase_pct: number
+  last_updated: string
+}
+

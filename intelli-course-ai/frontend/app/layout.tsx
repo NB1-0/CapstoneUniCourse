@@ -4,6 +4,7 @@ import './globals.css'
 import { ThemeProvider } from '@/components/ThemeProvider'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { NotificationProvider } from '@/contexts/NotificationContext'
+import { MemoryProvider } from '@/contexts/MemoryContext'
 import { Toaster } from 'react-hot-toast'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
@@ -20,6 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${inter.variable} font-sans antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <AuthProvider>
+            <MemoryProvider>
             <NotificationProvider>
               {children}
               <Toaster
@@ -34,6 +36,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 }}
               />
             </NotificationProvider>
+            </MemoryProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>
