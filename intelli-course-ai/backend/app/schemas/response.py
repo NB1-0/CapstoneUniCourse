@@ -15,6 +15,8 @@ class CourseResult(BaseModel):
     prerequisites: list[str] = Field(default_factory=list)
     next_course_suggestion: str | None = None
     course_url: str | None = None
+    certificate_type: str = ""
+    students_enrolled: int = 0
 
 
 class SearchResponse(BaseModel):

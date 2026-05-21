@@ -18,6 +18,11 @@ class Settings(BaseSettings):
 
     DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/intellicourse"
 
+    # ── Neo4j (optional — leave empty to use in-memory graph) ─────────────
+    NEO4J_URI: str = ""
+    NEO4J_USER: str = "neo4j"
+    NEO4J_PASSWORD: str = ""
+
     TOP_K_RESULTS: int = 10
     RERANK_TOP_K: int = 5
     MAX_TOKENS: int = 2000

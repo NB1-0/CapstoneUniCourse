@@ -2,6 +2,8 @@ import axios, { AxiosError } from 'axios'
 import type {
   SearchResponse, RecommendResponse, LearningPathResponse,
   SkillGapResponse, CareerAlignResponse, CoursesListResponse, HealthResponse,
+  GraphStats, GraphExploreData, SkillPathResponse, CareerPathResponse,
+  RelatedSkillsResponse, GraphRecommendResponse,
 } from '@/types'
 
 const API_BASE = typeof window !== 'undefined'
@@ -52,4 +54,51 @@ export const api = {
 
   ingest: (source?: string, file_path?: string) =>
     client.post('/ingest', { source: source || 'sample', file_path: file_path || 'data/courses.csv' }).then((r) => r.data),
+
+  // ── Graph / GraphRAG ──────────────────────────────────────────────────────
+  graphStats: (): Promise<GraphStats> =>
+    client.get('/graph/stats').then((r) => r.data),
+
+  exploreGraph: (params?: {
+    node_types?: string
+    max_nodes?: number
+    focus_skill?: string
+  }): Promise<GraphExploreData> =>
+    client.get('/graph/explore', { params }).then((r) => r.data),
+
+  skillPath: (from_skill: string, to_skill: string, max_depth?: number): Promise<SkillPathResponse> =>
+    client.post('/graph/skill-path', { from_skill, to_skill, max_depth: max_depth || 8 }).then((r) => r.data),
+
+  careerPath: (
+    career_goal: string,
+    current_skills: string[],
+    max_courses_per_skill?: number,
+  ): Promise<CareerPathResponse> =>
+    client.post('/graph/career-path', {
+      career_goal,
+      current_skills,
+      max_courses_per_skill: max_courses_per_skill || 2,
+    }).then((r) => r.data),
+
+  graphRecommendations: (
+    query: string,
+    current_skills?: string[],
+    target_skills?: string[],
+    top_k?: number,
+  ): Promise<GraphRecommendResponse> =>
+    client.post('/graph/recommendations', {
+      query,
+      current_skills: current_skills || [],
+      target_skills: target_skills || [],
+      top_k: top_k || 10,
+    }).then((r) => r.data),
+
+  relatedSkills: (skill_name: string): Promise<RelatedSkillsResponse> =>
+    client.get(`/graph/related/${encodeURIComponent(skill_name)}`).then((r) => r.data),
+
+  listCareers: (): Promise<{
+    careers: Array<{ title: string; required_skills_count: number; key_skills: string[] }>
+    total: number
+  }> =>
+    client.get('/graph/careers').then((r) => r.data),
 }

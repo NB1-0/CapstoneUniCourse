@@ -2,7 +2,7 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 
-from sqlalchemy import Column, String, Float, JSON, DateTime, Text
+from sqlalchemy import Column, String, Float, Integer, JSON, DateTime, Text
 from sqlalchemy.orm import DeclarativeBase
 
 
@@ -21,6 +21,8 @@ class Course:
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
     course_url: str = ""
     prerequisites: list[str] = field(default_factory=list)
+    certificate_type: str = ""
+    students_enrolled: int = 0
     embedding: list[float] | None = None
 
     def to_dict(self) -> dict:
@@ -34,6 +36,8 @@ class Course:
             "rating": self.rating,
             "course_url": self.course_url,
             "prerequisites": self.prerequisites,
+            "certificate_type": self.certificate_type,
+            "students_enrolled": self.students_enrolled,
         }
 
     def get_text_for_embedding(self) -> str:
@@ -53,4 +57,6 @@ class CourseDB(Base):
     rating = Column(Float, default=0.0)
     course_url = Column(String, default="")
     prerequisites = Column(JSON, default=list)
+    certificate_type = Column(String, default="")
+    students_enrolled = Column(Integer, default=0)
     created_at = Column(DateTime, default=datetime.utcnow)

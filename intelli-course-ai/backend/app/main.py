@@ -5,7 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.config import get_settings
-from app.api.routes import health, courses, search, recommend, learning_path, skill_gap, career, ingest
+from app.api.routes import health, courses, search, recommend, learning_path, skill_gap, career, ingest, notifications
+from app.api.routes import graph as graph_routes
 
 logger = structlog.get_logger()
 
@@ -40,14 +41,27 @@ async def lifespan(app: FastAPI):
         count = await load_sample_data()
         logger.info("Sample courses loaded", count=count)
 
+    # Build knowledge graph from loaded courses
+    from app.services.search_service import get_search_service
+    from app.services.graph_service import build_knowledge_graph
+    from app.graph import neo4j_client
+    search_svc = get_search_service()
+    await build_knowledge_graph(search_svc.courses)
+
+    # Connect Neo4j if configured
+    if settings.NEO4J_URI:
+        await neo4j_client.init_neo4j(settings.NEO4J_URI, settings.NEO4J_USER, settings.NEO4J_PASSWORD)
+
     logger.info("IntelliCourse AI ready")
     yield
 
     # Shutdown
     from app.db.postgres import close_db
     from app.db.redis_client import close_redis
+    from app.graph import neo4j_client
     await close_db()
     await close_redis()
+    await neo4j_client.close_neo4j()
     logger.info("IntelliCourse AI shutdown complete")
 
 
@@ -84,6 +98,8 @@ def create_app() -> FastAPI:
     app.include_router(skill_gap.router, prefix=prefix)
     app.include_router(career.router, prefix=prefix)
     app.include_router(ingest.router, prefix=prefix)
+    app.include_router(notifications.router, prefix=prefix)
+    app.include_router(graph_routes.router, prefix=prefix)
 
     return app
 

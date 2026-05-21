@@ -1,0 +1,41 @@
+,course_title,course_organization,course_Certificate_type,course_rating,course_difficulty,course_students_enrolled
+0,Machine Learning Specialization,Stanford / DeepLearning.AI,SPECIALIZATION,4.9,Beginner,4.8m
+1,Deep Learning Specialization,DeepLearning.AI,SPECIALIZATION,4.9,Intermediate,770k
+2,IBM Data Science Professional Certificate,IBM,PROFESSIONAL CERTIFICATE,4.6,Beginner,613k
+3,Google Data Analytics Professional Certificate,Google,PROFESSIONAL CERTIFICATE,4.8,Beginner,2.3m
+4,AWS Cloud Practitioner Essentials,Amazon Web Services,COURSE,4.7,Beginner,820k
+5,TensorFlow Developer Professional Certificate,DeepLearning.AI,PROFESSIONAL CERTIFICATE,4.7,Intermediate,230k
+6,Natural Language Processing Specialization,DeepLearning.AI,SPECIALIZATION,4.8,Advanced,190k
+7,Applied Data Science with Python,University of Michigan,SPECIALIZATION,4.5,Intermediate,540k
+8,IBM Data Engineering Professional Certificate,IBM,PROFESSIONAL CERTIFICATE,4.6,Intermediate,280k
+9,Google Cloud Professional Data Engineer,Google Cloud,PROFESSIONAL CERTIFICATE,4.7,Advanced,90k
+10,Meta Front-End Developer Certificate,Meta,PROFESSIONAL CERTIFICATE,4.7,Beginner,430k
+11,Full Stack Web Development with React,HKUST,SPECIALIZATION,4.5,Intermediate,320k
+12,Python for Everybody Specialization,University of Michigan,SPECIALIZATION,4.8,Beginner,1.8m
+13,SQL for Data Science,UC Davis,COURSE,4.6,Beginner,760k
+14,Statistics with Python Specialization,University of Michigan,SPECIALIZATION,4.5,Intermediate,410k
+15,MLOps Specialization,DeepLearning.AI,SPECIALIZATION,4.7,Advanced,120k
+16,Docker and Kubernetes: Complete Guide,Udemy,COURSE,4.8,Intermediate,300k
+17,Microsoft Azure Fundamentals AZ-900,Microsoft,COURSE,4.7,Beginner,670k
+18,Computer Vision with TensorFlow,DeepLearning.AI,COURSE,4.6,Intermediate,290k
+19,Reinforcement Learning Specialization,University of Alberta,SPECIALIZATION,4.6,Advanced,85k
+20,Business Analytics Specialization,UPenn / Wharton,SPECIALIZATION,4.6,Beginner,500k
+21,Apache Spark and Scala,Databricks,COURSE,4.7,Advanced,180k
+22,Generative AI with Large Language Models,DeepLearning.AI / AWS,COURSE,4.8,Intermediate,350k
+23,Data Warehousing and BI Analytics,UC Boulder,SPECIALIZATION,4.5,Intermediate,140k
+24,Agile Project Management,Google,PROFESSIONAL CERTIFICATE,4.8,Beginner,1.1m
+25,Fundamentals of Data Engineering,O'Reilly / Coursera,COURSE,4.6,Intermediate,95k
+26,Prompt Engineering for ChatGPT,Vanderbilt University,COURSE,4.7,Beginner,420k
+27,Advanced Machine Learning Specialization,HSE University,SPECIALIZATION,4.5,Advanced,75k
+28,Tableau Business Intelligence Analyst,Tableau / Salesforce,PROFESSIONAL CERTIFICATE,4.7,Intermediate,210k
+29,Introduction to Cybersecurity,Cisco Networking Academy,COURSE,4.6,Beginner,560k
+30,Blockchain Specialization,INSEAD,SPECIALIZATION,4.5,Intermediate,130k
+31,Introduction to Cloud Computing,IBM,COURSE,4.6,Beginner,490k
+32,Robotics Specialization,University of Pennsylvania,SPECIALIZATION,4.4,Advanced,88k
+33,Bioinformatics Specialization,UC San Diego,SPECIALIZATION,4.6,Intermediate,310k
+34,Supply Chain Management,Rutgers,SPECIALIZATION,4.5,Beginner,240k
+35,Financial Markets,Yale University,COURSE,4.8,Beginner,950k
+36,Introduction to Finance,University of Michigan,SPECIALIZATION,4.7,Beginner,370k
+37,Cryptocurrency and Blockchain,Princeton University,COURSE,4.6,Intermediate,280k
+38,Ethical Hacking and Penetration Testing,ECCouncil,PROFESSIONAL CERTIFICATE,4.5,Intermediate,160k
+39,Introduction to IoT,Cisco,COURSE,4.7,Beginner,430k

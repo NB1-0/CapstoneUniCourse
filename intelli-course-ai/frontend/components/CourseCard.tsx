@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Star, BookOpen, Bookmark, BookmarkCheck, ChevronDown, ChevronUp, ExternalLink, Plus } from 'lucide-react'
+import { Star, BookOpen, Bookmark, BookmarkCheck, ChevronDown, ChevronUp, ExternalLink, Plus, Users, Award } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
@@ -63,12 +63,25 @@ export function CourseCard({ course, onSave, onCompare, isSaved = false, compact
             <Star className="w-3 h-3 fill-current" />
             <span className="font-medium text-foreground">{formatRating(course.rating)}</span>
           </div>
+          {course.certificate_type && (
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <Award className="w-3 h-3" />
+              <span className="capitalize">{course.certificate_type.toLowerCase()}</span>
+            </div>
+          )}
           {course.relevance_score > 0 && (
             <div className="ml-auto text-xs text-muted-foreground">
               {Math.round(course.relevance_score * 100)}% match
             </div>
           )}
         </div>
+        {/* Enrollment count */}
+        {(course.students_enrolled ?? 0) > 0 && (
+          <div className="flex items-center gap-1 text-xs text-muted-foreground mb-2">
+            <Users className="w-3 h-3" />
+            <span>{course.students_enrolled!.toLocaleString()} enrolled</span>
+          </div>
+        )}
 
         {/* Relevance bar */}
         {course.relevance_score > 0 && (
@@ -138,11 +151,14 @@ export function CourseCard({ course, onSave, onCompare, isSaved = false, compact
             </Button>
           )}
           {course.course_url && (
-            <Button variant="ghost" size="sm" className="flex-1 text-xs h-8" asChild>
-              <a href={course.course_url} target="_blank" rel="noopener noreferrer">
-                <ExternalLink className="w-3 h-3 mr-1" /> View
-              </a>
-            </Button>
+            <a
+              href={course.course_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 flex items-center justify-center gap-1 text-xs h-8 px-3 rounded-md border border-border hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
+            >
+              <ExternalLink className="w-3 h-3" /> View
+            </a>
           )}
           {!course.course_url && (
             <Button variant="ghost" size="sm" className="flex-1 text-xs h-8" onClick={() => onSave?.(course)}>

@@ -36,6 +36,8 @@ def _course_to_result(course: Course, score: float = 0.5, why: str = "", matched
         why_recommended=why or f"Highly relevant course from {course.organization}.",
         prerequisites=course.prerequisites,
         course_url=course.course_url,
+        certificate_type=getattr(course, "certificate_type", ""),
+        students_enrolled=getattr(course, "students_enrolled", 0),
     )
 
 

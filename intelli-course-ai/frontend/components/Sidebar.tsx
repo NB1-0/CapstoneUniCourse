@@ -6,7 +6,7 @@ import { useTheme } from 'next-themes'
 import {
   LayoutDashboard, Search, Route, BarChart3, Briefcase,
   Bookmark, Settings, ChevronLeft, ChevronRight, Moon, Sun,
-  GraduationCap, Sparkles,
+  GraduationCap, Sparkles, Share2, Map,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -17,6 +17,8 @@ const navItems = [
   { label: 'Learning Path', href: '/learning-path', icon: Route },
   { label: 'Skill Gap', href: '/skill-gap', icon: BarChart3 },
   { label: 'Career Explorer', href: '/career', icon: Briefcase },
+  { label: 'Knowledge Graph', href: '/graph', icon: Share2 },
+  { label: 'Learning Maps', href: '/learning-map', icon: Map, badge: 'New' },
   { label: 'Saved Courses', href: '/saved', icon: Bookmark },
   { label: 'Settings', href: '/settings', icon: Settings },
 ]
@@ -65,11 +67,16 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
                 <Icon className="w-5 h-5 flex-shrink-0" />
                 <AnimatePresence>
                   {!isCollapsed && (
-                    <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-sm truncate">
+                    <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-sm truncate flex-1">
                       {item.label}
                     </motion.span>
                   )}
                 </AnimatePresence>
+                {!isCollapsed && 'badge' in item && item.badge && (
+                  <span className="ml-auto text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-blue-500/20 text-blue-400 leading-none">
+                    {item.badge}
+                  </span>
+                )}
               </div>
             </Link>
           )

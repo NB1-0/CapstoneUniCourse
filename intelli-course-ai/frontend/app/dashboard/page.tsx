@@ -8,6 +8,8 @@ import { DashboardStats } from '@/components/DashboardStats'
 import { CourseCard } from '@/components/CourseCard'
 import { Skeleton } from '@/components/ui/skeleton'
 import { api } from '@/lib/api'
+import { useAuth } from '@/contexts/AuthContext'
+import { useNotifications } from '@/contexts/NotificationContext'
 import type { CourseResult } from '@/types'
 
 const ACTIVITY_DATA = [
@@ -24,6 +26,8 @@ export default function DashboardPage() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [trending, setTrending] = useState<CourseResult[]>([])
   const [loading, setLoading] = useState(true)
+  const { user } = useAuth()
+  const { addNotification } = useNotifications()
 
   const savedCourses = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('savedCourseData') || '[]') : []
   const userSkills = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('userSkills') || '[]') : []
@@ -33,6 +37,7 @@ export default function DashboardPage() {
       try {
         const res = await api.search('machine learning data science', {}, 3)
         setTrending(res.results.slice(0, 3))
+        addNotification('system', 'Dashboard loaded', `Found ${res.total} courses ready to explore.`)
       } catch {
         setTrending([])
       } finally {
@@ -40,6 +45,7 @@ export default function DashboardPage() {
       }
     }
     load()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const stats = {
@@ -58,7 +64,10 @@ export default function DashboardPage() {
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="max-w-6xl mx-auto space-y-8">
             {/* Welcome */}
             <div>
-              <h1 className="text-2xl font-bold">Good morning, Explorer! 👋</h1>
+              <h1 className="text-2xl font-bold">
+                Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 17 ? 'afternoon' : 'evening'},{' '}
+                {user ? user.name.split(' ')[0] : 'Explorer'}!
+              </h1>
               <p className="text-muted-foreground text-sm mt-1">Here&apos;s an overview of your learning journey.</p>
             </div>
 

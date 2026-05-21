@@ -1,13 +1,15 @@
 'use client'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import {
   Search, Route, BarChart3, Briefcase, Star, ArrowRight,
-  GraduationCap, Sparkles, Brain, CheckCircle, BookOpen,
-  ChevronRight, Moon, Sun, Zap, Users, Globe, Award,
+  GraduationCap, Sparkles, Brain, BookOpen,
+  ChevronRight, Moon, Sun, Zap, Users, Globe,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useTheme } from 'next-themes'
+import { useAuth } from '@/contexts/AuthContext'
 
 const FEATURES = [
   { icon: Search, title: 'AI Course Search', desc: 'Natural language search across thousands of courses using semantic AI understanding.', color: 'from-blue-500 to-blue-600' },
@@ -35,11 +37,13 @@ const STATS = [
 const TESTIMONIALS = [
   { name: 'Priya Sharma', role: 'ML Engineer at Google', text: 'IntelliCourse found my perfect learning path from Python beginner to ML engineer in under a minute. Incredible tool!' },
   { name: 'James Chen', role: 'Data Scientist at Meta', text: 'The skill gap analysis was eye-opening. It told me exactly which 3 courses I was missing to qualify for senior roles.' },
-  { name: 'Sarah O\'Brien', role: 'Cloud Architect at AWS', text: 'I planned my entire AWS certification journey using the career alignment feature. Now I\'m certified and employed!' },
+  { name: "Sarah O'Brien", role: 'Cloud Architect at AWS', text: "I planned my entire AWS certification journey using the career alignment feature. Now I'm certified and employed!" },
 ]
 
 export default function LandingPage() {
   const { theme, setTheme } = useTheme()
+  const { user } = useAuth()
+  const router = useRouter()
 
   return (
     <div className="min-h-screen bg-background">
@@ -59,14 +63,39 @@ export default function LandingPage() {
               <a href="#testimonials" className="hover:text-foreground transition-colors">Testimonials</a>
             </div>
             <div className="flex items-center gap-3">
-              <button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="text-muted-foreground hover:text-foreground transition-colors p-1.5 rounded-lg hover:bg-accent">
+              <button
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                className="text-muted-foreground hover:text-foreground transition-colors p-1.5 rounded-lg hover:bg-accent"
+              >
                 {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
               </button>
-              <Link href="/dashboard">
-                <Button size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-md">
-                  Get Started <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
-                </Button>
-              </Link>
+
+              {user ? (
+                <>
+                  <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
+                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white text-xs font-bold">
+                      {user.name.charAt(0).toUpperCase()}
+                    </div>
+                    <span className="font-medium text-foreground">{user.name.split(' ')[0]}</span>
+                  </div>
+                  <Link href="/dashboard">
+                    <Button size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-md">
+                      Dashboard <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+                    </Button>
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link href="/auth/login">
+                    <Button size="sm" variant="ghost" className="text-sm">Sign In</Button>
+                  </Link>
+                  <Link href="/auth/signup">
+                    <Button size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-md">
+                      Sign Up <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+                    </Button>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -83,29 +112,34 @@ export default function LandingPage() {
             <Sparkles className="w-3.5 h-3.5" /> Powered by GPT-4o + Semantic Search
           </motion.div>
           <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="text-4xl sm:text-6xl font-bold tracking-tight mb-6">
-            Your{' '}
-            <span className="gradient-text">AI-Powered</span>
-            {' '}Course Intelligence Platform
+            Your <span className="gradient-text">AI-Powered</span> Course Intelligence Platform
           </motion.h1>
           <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="text-lg text-muted-foreground max-w-2xl mx-auto mb-10">
             Discover the perfect courses, analyze your skill gaps, and generate a personalized learning path to your dream career — all in seconds.
           </motion.p>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="flex flex-wrap items-center justify-center gap-4">
-            <Link href="/dashboard">
-              <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-xl shadow-blue-500/30 px-8">
-                Start Learning Free <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            </Link>
+            {user ? (
+              <Link href="/dashboard">
+                <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-xl shadow-blue-500/30 px-8">
+                  Go to Dashboard <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </Link>
+            ) : (
+              <Link href="/auth/signup">
+                <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-xl shadow-blue-500/30 px-8">
+                  Start Learning Free <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </Link>
+            )}
             <Link href="/finder">
               <Button size="lg" variant="outline" className="px-8">
                 <Search className="w-4 h-4 mr-2" /> Try AI Search
               </Button>
             </Link>
           </motion.div>
-          {/* Trust bar */}
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="mt-12 flex flex-wrap justify-center gap-6 text-xs text-muted-foreground">
-            {['✓ No signup required', '✓ Works without API key (mock mode)', '✓ 30+ courses pre-loaded', '✓ Open source'].map((t) => (
-              <span key={t} className="flex items-center gap-1">{t}</span>
+            {['✓ Free to use', '✓ Works without API key', '✓ 891 Coursera courses', '✓ Real-time notifications'].map((t) => (
+              <span key={t}>{t}</span>
             ))}
           </motion.div>
         </div>
@@ -179,7 +213,7 @@ export default function LandingPage() {
             {TESTIMONIALS.map(({ name, role, text }, i) => (
               <motion.div key={name} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} viewport={{ once: true }} className="glass-card rounded-2xl p-6">
                 <div className="flex mb-3">
-                  {[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />)}
+                  {[...Array(5)].map((_, j) => <Star key={j} className="w-4 h-4 fill-amber-400 text-amber-400" />)}
                 </div>
                 <p className="text-sm text-muted-foreground leading-relaxed mb-4">&ldquo;{text}&rdquo;</p>
                 <div>
@@ -199,11 +233,20 @@ export default function LandingPage() {
             <Zap className="w-10 h-10 mx-auto mb-4 opacity-90" />
             <h2 className="text-3xl font-bold mb-4">Ready to accelerate your learning?</h2>
             <p className="text-white/80 mb-8">Join thousands of learners using AI to navigate their education journey.</p>
-            <Link href="/dashboard">
-              <Button size="lg" className="bg-white text-blue-700 hover:bg-white/90 font-semibold px-10">
-                Start for Free <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            </Link>
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              <Link href={user ? '/dashboard' : '/auth/signup'}>
+                <Button size="lg" className="bg-white text-blue-700 hover:bg-white/90 font-semibold px-10">
+                  {user ? 'Go to Dashboard' : 'Start for Free'} <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </Link>
+              {!user && (
+                <Link href="/auth/login">
+                  <Button size="lg" variant="outline" className="border-white/40 text-white hover:bg-white/10 px-8">
+                    Sign In
+                  </Button>
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       </section>
@@ -219,9 +262,9 @@ export default function LandingPage() {
           </div>
           <p className="text-xs text-muted-foreground">© 2024 IntelliCourse AI. Built with Next.js, FastAPI & GPT-4o.</p>
           <div className="flex gap-4 text-xs text-muted-foreground">
+            <Link href="/auth/login" className="hover:text-foreground">Sign In</Link>
+            <Link href="/auth/signup" className="hover:text-foreground">Sign Up</Link>
             <Link href="/dashboard" className="hover:text-foreground">Dashboard</Link>
-            <Link href="/finder" className="hover:text-foreground">Course Finder</Link>
-            <Link href="/settings" className="hover:text-foreground">Settings</Link>
           </div>
         </div>
       </footer>
